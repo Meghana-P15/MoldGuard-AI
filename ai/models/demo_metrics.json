@@ -1,0 +1,65 @@
+{
+  "WARNING": "These metrics are from SYNTHETIC demo data and are not valid real-world claims.",
+  "risk": {
+    "classification_report": {
+      "G": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 9.0
+      },
+      "Y": {
+        "precision": 0.7526881720430108,
+        "recall": 0.7608695652173914,
+        "f1-score": 0.7567567567567568,
+        "support": 92.0
+      },
+      "R": {
+        "precision": 0.9304635761589404,
+        "recall": 0.9525423728813559,
+        "f1-score": 0.9413735343383585,
+        "support": 295.0
+      },
+      "accuracy": 0.8863636363636364,
+      "macro avg": {
+        "precision": 0.5610505827339837,
+        "recall": 0.5711373126995825,
+        "f1-score": 0.5660434303650385,
+        "support": 396.0
+      },
+      "weighted avg": {
+        "precision": 0.8680153201890011,
+        "recall": 0.8863636363636364,
+        "f1-score": 0.8770879147763571,
+        "support": 396.0
+      }
+    },
+    "confusion_matrix_labels": [
+      "G",
+      "Y",
+      "R"
+    ],
+    "confusion_matrix": [
+      [
+        0,
+        9,
+        0
+      ],
+      [
+        1,
+        70,
+        21
+      ],
+      [
+        0,
+        14,
+        281
+      ]
+    ]
+  },
+  "energy": {
+    "mae": 0.023596053477918422,
+    "rmse": 0.02961887577299025,
+    "r2": 0.9471068098474053
+  }
+}
