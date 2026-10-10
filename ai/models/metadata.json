@@ -1,0 +1,23 @@
+{
+  "model_mode": "real_dual_dataset",
+  "features": [
+    "Tinj",
+    "tinj",
+    "Pinj",
+    "Ph",
+    "Bp",
+    "th"
+  ],
+  "labels": [
+    "G",
+    "Y",
+    "R"
+  ],
+  "raw_datasets": [
+    "modelo.xlsx",
+    "test_dataset.csv"
+  ],
+  "training_rows": 4494,
+  "source": "Two real-world datasets loaded directly at training time; no generated training CSV.",
+  "energy_pairing_note": "Independent datasets; energy distribution calibrated by rank, not row-wise joined."
+}

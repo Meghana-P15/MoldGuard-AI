@@ -1,0 +1,66 @@
+{
+  "NOTE": "Risk model uses measured molding/defect data from modelo.xlsx. Energy values are calibrated from measured TOTAL_ACT_POWER in test_dataset.csv. The two source datasets have no common row key and are not claimed to be row-wise paired.",
+  "rows_used": 4494,
+  "risk": {
+    "classification_report": {
+      "G": {
+        "precision": 0.529559748427673,
+        "recall": 0.8522267206477733,
+        "f1-score": 0.6532195500387897,
+        "support": 494.0
+      },
+      "Y": {
+        "precision": 0.3855421686746988,
+        "recall": 0.21548821548821548,
+        "f1-score": 0.27645788336933047,
+        "support": 297.0
+      },
+      "R": {
+        "precision": 0.17857142857142858,
+        "recall": 0.025252525252525252,
+        "f1-score": 0.04424778761061947,
+        "support": 198.0
+      },
+      "accuracy": 0.4954499494438827,
+      "macro avg": {
+        "precision": 0.3645577818912668,
+        "recall": 0.3643224871295047,
+        "f1-score": 0.3246417403395799,
+        "support": 989.0
+      },
+      "weighted avg": {
+        "precision": 0.41604214628594416,
+        "recall": 0.4954499494438827,
+        "f1-score": 0.4181592629188634,
+        "support": 989.0
+      }
+    },
+    "confusion_matrix_labels": [
+      "G",
+      "Y",
+      "R"
+    ],
+    "confusion_matrix": [
+      [
+        421,
+        58,
+        15
+      ],
+      [
+        225,
+        64,
+        8
+      ],
+      [
+        149,
+        44,
+        5
+      ]
+    ]
+  },
+  "energy": {
+    "mae_kwh_per_cycle": 0.010320713464256101,
+    "rmse_kwh_per_cycle": 0.01597651918060059,
+    "r2": 0.29663186990441426
+  }
+}

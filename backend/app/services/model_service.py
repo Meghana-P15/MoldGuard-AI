@@ -27,11 +27,7 @@ class ModelService:
             "predicted_energy": round(float(energy), 5),
             "projected_energy": round(float(energy * cycles), 5),
             "model_mode": bundle.model_mode,
-            "note": (
-                "Demo model: synthetic smoke-test data only."
-                if bundle.model_mode == "demo"
-                else "Prediction from configured trained model."
-            ),
+            "note": "Prediction from configured trained model.",
         }
 
     @classmethod
