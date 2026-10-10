@@ -16,7 +16,7 @@ MoldGuard AI predicts injection-molding batch viability, estimates cycle energy,
 
 ## Important dataset note
 
-This repository ships with a **synthetic demo dataset only for smoke testing**. Do **not** present demo-model metrics as real-world performance.
+This repository uses the two provided real-world datasets in `ai/data/`: `modelo.xlsx` and `test_dataset.csv`. No synthetic training dataset is used.
 
 For the final hackathon submission, retrain on the real injection-molding datasets listed in `docs/DATASETS.md`, validate the column mapping, and replace the artifacts in `ai/models/`.
 
@@ -46,10 +46,9 @@ Install:
 pip install -r requirements.txt
 ```
 
-### 2) Generate demo data and train smoke-test models
+### 2) Train models from the two real datasets
 
 ```bash
-python -m ai.training.generate_demo_data
 python -m ai.training.train_all
 ```
 

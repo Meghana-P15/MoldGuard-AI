@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: MoldGuard AI prediction-history table
+Resources:
+  MoldGuardPredictions:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: MoldGuardPredictions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: prediction_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: prediction_id
+          KeyType: HASH
+Outputs:
+  TableName:
+    Value: !Ref MoldGuardPredictions
