@@ -1,220 +1,223 @@
-import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { optimizeBatch, predictBatch } from "./api";
-import type { BatchInput, OptimizeResponse, PredictResponse } from "./types";
+import { useEffect, useState } from "react";
+import { analyzeBatch, getMeta } from "./api";
+import type { AnalyzeResponse, BatchInput, MetaResponse, ProcessKey } from "./types";
 
-const initial: BatchInput = {
-  Tinj: 230,
-  tinj: 1.5,
-  Pinj: 32,
-  Ph: 18,
-  Bp: 22,
-  th: 6,
-  cycles: 10000,
+const processKeys: ProcessKey[] = ["Tinj", "tinj", "Pinj", "Ph", "Tmold", "th"];
+
+const fallback: BatchInput = {
+  machine: "I-10",
+  material: "A-PROD",
+  Tinj: 250,
+  tinj: 29,
+  Pinj: 140,
+  Ph: 65,
+  Tmold: 80,
+  th: 9,
+  cycles: 1000,
+  part_weight_g: 250,
 };
 
-const labels: Record<keyof BatchInput, string> = {
-  Tinj: "Injection temperature",
-  tinj: "Injection time",
-  Pinj: "Injection pressure",
-  Ph: "Holding pressure",
-  Bp: "Back pressure",
-  th: "Holding time",
-  cycles: "Planned cycles",
-};
-
-const units: Partial<Record<keyof BatchInput, string>> = {
-  Tinj: "°C",
-  tinj: "s",
-  Pinj: "bar",
-  Ph: "bar",
-  Bp: "bar",
-  th: "s",
+const decisionTitle: Record<string, string> = {
+  GOOD: "Good",
+  WARNING: "Warning",
+  HIGH_RISK: "High Risk",
+  REVIEW_REQUIRED: "Review Required",
 };
 
 export default function App() {
-  const [form, setForm] = useState<BatchInput>(initial);
-  const [prediction, setPrediction] = useState<PredictResponse | null>(null);
-  const [optimization, setOptimization] = useState<OptimizeResponse | null>(null);
-  const [busy, setBusy] = useState<"predict" | "optimize" | null>(null);
+  const [meta, setMeta] = useState<MetaResponse | null>(null);
+  const [form, setForm] = useState<BatchInput>(fallback);
+  const [result, setResult] = useState<AnalyzeResponse | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const probabilityData = useMemo(() => {
-    if (!prediction) return [];
-    return [
-      { name: "Good", value: Math.round(prediction.probabilities.G * 100) },
-      { name: "Warning", value: Math.round(prediction.probabilities.Y * 100) },
-      { name: "Reject", value: Math.round(prediction.probabilities.R * 100) },
-    ];
-  }, [prediction]);
+  useEffect(() => {
+    getMeta()
+      .then((m) => {
+        setMeta(m);
+        setForm((prev) => ({
+          ...prev,
+          machine: m.machines[0] || prev.machine,
+          material: m.materials[0] || prev.material,
+          part_weight_g: m.part_weight.median_g || prev.part_weight_g,
+          ...m.defaults,
+        }));
+      })
+      .catch((e) => setError(e instanceof Error ? e.message : "Could not load model metadata"));
+  }, []);
 
-  function update(key: keyof BatchInput, raw: string) {
-    const numeric = key === "cycles" ? Number.parseInt(raw || "0", 10) : Number(raw);
-    setForm((prev) => ({ ...prev, [key]: Number.isFinite(numeric) ? numeric : 0 }));
+  function setNumber(key: keyof BatchInput, value: string) {
+    const parsed = key === "cycles" ? Number.parseInt(value || "0", 10) : Number(value);
+    setForm((old) => ({ ...old, [key]: Number.isFinite(parsed) ? parsed : 0 }));
   }
 
-  async function runPrediction() {
-    setBusy("predict");
-    setError("");
-    setOptimization(null);
-    try {
-      setPrediction(await predictBatch(form));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Prediction failed");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function runOptimization() {
-    setBusy("optimize");
+  async function analyze() {
+    setBusy(true);
     setError("");
     try {
-      setOptimization(await optimizeBatch(form));
+      setResult(await analyzeBatch(form));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Optimization failed");
+      setError(e instanceof Error ? e.message : "Analysis failed");
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   }
 
   return (
     <main className="shell">
-      <header className="hero">
+      <header className="topbar">
         <div>
-          <div className="eyebrow">AWS Environmental Hacks · Waste & Energy</div>
-          <h1>MoldGuard AI</h1>
-          <p>Predict scrap risk before production, explain the drivers, and recommend lower-risk, lower-energy settings.</p>
+          <div className="eyebrow">MoldGuard AI · Decision Cockpit</div>
+          <h1>Prevent scrap before production.</h1>
+          <p>Real defect-rate prediction, data-familiarity checks, real-energy estimation, constrained optimization and evidence-backed recommendations.</p>
         </div>
-        <div className="badge">Prevent waste before it happens</div>
+        <div className="real-data-pill">2 real datasets · no synthetic training data</div>
       </header>
 
-      <section className="grid two">
-        <article className="card">
-          <h2>Current machine settings</h2>
-          <p className="muted">Enter the planned injection-molding process parameters.</p>
+      <section className="layout">
+        <article className="card input-card">
+          <div className="card-heading">
+            <div><span className="step">1</span><h2>Machine parameters</h2></div>
+            <small>Operator input</small>
+          </div>
+
           <div className="form-grid">
-            {(Object.keys(form) as (keyof BatchInput)[]).map((key) => (
-              <label key={key}>
-                <span>{labels[key]}</span>
-                <div className="input-wrap">
-                  <input
-                    type="number"
-                    step={key === "cycles" ? "1" : "0.1"}
-                    value={form[key]}
-                    onChange={(e) => update(key, e.target.value)}
-                  />
-                  {units[key] && <em>{units[key]}</em>}
-                </div>
-              </label>
-            ))}
+            <label>
+              <span>Machine</span>
+              <select value={form.machine} onChange={(e) => setForm((x) => ({ ...x, machine: e.target.value }))}>
+                {(meta?.machines || [form.machine]).map((x) => <option key={x}>{x}</option>)}
+              </select>
+            </label>
+            <label>
+              <span>Material / energy profile</span>
+              <select value={form.material} onChange={(e) => setForm((x) => ({ ...x, material: e.target.value }))}>
+                {(meta?.materials || [form.material]).map((x) => <option key={x}>{x}</option>)}
+              </select>
+            </label>
+
+            {processKeys.map((key) => {
+              const bounds = meta?.parameter_bounds?.[key];
+              return (
+                <label key={key}>
+                  <span>{meta?.feature_labels?.[key] || key}</span>
+                  <div className="input-wrap">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min={bounds?.[0]}
+                      max={bounds?.[1]}
+                      value={form[key]}
+                      onChange={(e) => setNumber(key, e.target.value)}
+                    />
+                    <em>{meta?.feature_units?.[key] || ""}</em>
+                  </div>
+                </label>
+              );
+            })}
+
+            <label>
+              <span>Production cycles</span>
+              <input type="number" min="1" value={form.cycles} onChange={(e) => setNumber("cycles", e.target.value)} />
+            </label>
+            <label>
+              <span>Part weight</span>
+              <div className="input-wrap">
+                <input type="number" min="0.1" step="0.1" value={form.part_weight_g} onChange={(e) => setNumber("part_weight_g", e.target.value)} />
+                <em>g</em>
+              </div>
+            </label>
           </div>
-          <div className="actions">
-            <button onClick={runPrediction} disabled={busy !== null}>
-              {busy === "predict" ? "Analyzing…" : "Analyze batch"}
-            </button>
-            <button className="secondary" onClick={runOptimization} disabled={busy !== null || !prediction}>
-              {busy === "optimize" ? "Optimizing…" : "Optimize settings"}
-            </button>
-          </div>
+
+          <button className="primary" onClick={analyze} disabled={busy}>{busy ? "Analyzing…" : "Analyze Before Production"}</button>
           {error && <div className="error">{error}</div>}
+          <p className="tiny">Risk is predicted as a real defect rate from <b>modelo.xlsx</b>; G/Y/R is assigned only after prediction using explicit thresholds.</p>
         </article>
 
-        <article className="card">
-          <h2>Batch risk</h2>
-          {!prediction ? (
-            <div className="empty">Run <strong>Analyze batch</strong> to see the risk profile.</div>
-          ) : (
-            <>
-              <div className={`risk ${prediction.risk_level.toLowerCase()}`}>
-                <div>
-                  <span>Predicted class</span>
-                  <strong>{prediction.prediction}</strong>
-                </div>
-                <div>
-                  <span>Risk level</span>
-                  <strong>{prediction.risk_level}</strong>
-                </div>
+        <article className="card result-card">
+          <div className="card-heading">
+            <div><span className="step purple">2</span><h2>Interactive result</h2></div>
+            <small>/api/analyze</small>
+          </div>
+
+          {!result ? <div className="empty">Enter the planned batch settings and run the analysis.</div> : <>
+            <div className={`decision ${result.batch_decision.toLowerCase()}`}>
+              <div>
+                <small>Batch decision</small>
+                <strong>{decisionTitle[result.batch_decision]}</strong>
               </div>
-              <div className="chart">
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={probabilityData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[0, 100]} unit="%" />
-                    <Tooltip formatter={(v) => `${v}%`} />
-                    <Bar dataKey="value" fill="currentColor" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div>
+                <small>Predicted defects</small>
+                <strong>{result.predicted_defect_percent.toFixed(2)}%</strong>
               </div>
-              <div className="stat-row">
-                <div><span>Energy / cycle</span><strong>{prediction.predicted_energy.toFixed(3)}</strong></div>
-                <div><span>Projected energy</span><strong>{prediction.projected_energy.toFixed(1)}</strong></div>
+              <div>
+                <small>Data familiarity</small>
+                <strong>{result.data_familiarity.in_distribution ? "IN" : "OUT"}</strong>
               </div>
-              {prediction.model_mode === "demo" && (
-                <div className="warning">Demo smoke-test model — synthetic data. Replace with the real trained artifacts before judging.</div>
-              )}
-            </>
-          )}
+            </div>
+
+            <div className="mini-grid">
+              <div><span>Defect uncertainty</span><b>±{result.defect_uncertainty_percentage_points.toFixed(2)} pp</b></div>
+              <div><span>Risk thresholds</span><b>{(result.risk_thresholds.good_max * 100).toFixed(0)}% / {(result.risk_thresholds.warning_max * 100).toFixed(0)}%</b></div>
+              <div><span>Power estimate</span><b>{result.energy.predicted_power_watts.toFixed(0)} W</b></div>
+              <div><span>Energy / cycle</span><b>{result.energy.kwh_per_cycle.toFixed(5)} kWh</b></div>
+              <div><span>Batch energy</span><b>{result.energy.current_batch_kwh.toFixed(2)} kWh</b></div>
+              <div><span>RAG backend</span><b>{result.rag_backend}</b></div>
+            </div>
+          </>}
         </article>
       </section>
 
-      {prediction && (
-        <section className="grid two">
+      {result && <>
+        <section className="layout three">
           <article className="card">
-            <h2>Why did the model predict this?</h2>
-            <p className="muted">Top XGBoost SHAP contribution values for the predicted class.</p>
+            <h2>Top defect-rate drivers</h2>
             <div className="drivers">
-              {prediction.top_risk_factors.length === 0 && <div className="empty">Contribution details unavailable.</div>}
-              {prediction.top_risk_factors.map((factor) => (
-                <div className="driver" key={factor.feature}>
-                  <span>{factor.feature}</span>
-                  <strong>{factor.impact >= 0 ? "+" : ""}{factor.impact.toFixed(3)}</strong>
-                  <small>{factor.direction} predicted score</small>
-                </div>
-              ))}
+              {result.top_risk_factors.map((x) => <div className="driver" key={x.feature}>
+                <span>{meta?.feature_labels?.[x.feature as ProcessKey] || x.feature}</span>
+                <b>{x.impact >= 0 ? "+" : ""}{x.impact.toFixed(3)} pp</b>
+                <small>{x.direction} predicted defect rate</small>
+              </div>)}
             </div>
           </article>
 
           <article className="card">
-            <h2>Optimized settings</h2>
-            {!optimization ? (
-              <div className="empty">Click <strong>Optimize settings</strong> after analyzing the batch.</div>
-            ) : (
-              <>
-                <div className="comparison">
-                  <div>
-                    <span>Good probability</span>
-                    <strong>{Math.round(optimization.current.good_probability * 100)}%</strong>
-                    <small>Current</small>
-                  </div>
-                  <div className="arrow">→</div>
-                  <div>
-                    <span>Good probability</span>
-                    <strong>{Math.round(optimization.optimized.good_probability * 100)}%</strong>
-                    <small>Recommended</small>
-                  </div>
-                </div>
-                <div className="settings-table">
-                  {Object.entries(optimization.recommended_parameters).map(([key, value]) => (
-                    <div key={key}>
-                      <span>{key}</span>
-                      <span>{(form as unknown as Record<string, number>)[key]?.toFixed?.(2)}</span>
-                      <span>→</span>
-                      <strong>{Number(value).toFixed(2)}</strong>
-                    </div>
-                  ))}
-                </div>
-                <div className="impact">
-                  <div><span>Energy reduction</span><strong>{optimization.improvement.energy_reduction_percent.toFixed(2)}%</strong></div>
-                  <div><span>Projected energy saved</span><strong>{optimization.projected.energy_saved.toFixed(2)}</strong></div>
-                </div>
-                <p className="footnote">{optimization.optimizer_note}</p>
-              </>
-            )}
+            <h2>Recommended settings</h2>
+            <div className="settings-table">
+              {processKeys.map((key) => <div key={key}>
+                <span>{key}</span><span>{form[key].toFixed(2)}</span><i>→</i><b>{result.recommended_parameters[key].toFixed(2)}</b>
+              </div>)}
+            </div>
+            <p className="tiny">{result.optimization.candidate_search.generated} candidates searched; {result.optimization.candidate_search.ood_filtered} OOD candidates filtered.</p>
+          </article>
+
+          <article className="card">
+            <h2>Impact calculation</h2>
+            <div className="impact-list">
+              <div><span>Energy reduction</span><b>{result.impact.energy_reduction_percent.toFixed(2)}%</b></div>
+              <div><span>Energy saved</span><b>{result.impact.energy_reduction_kwh.toFixed(2)} kWh</b></div>
+              <div><span>Defect-rate change</span><b>{result.impact.defect_rate_change_percentage_points.toFixed(2)} pp</b></div>
+              <div><span>Material-at-risk reduction</span><b>{result.impact.material_at_risk_reduction_kg.toFixed(2)} kg</b></div>
+            </div>
           </article>
         </section>
-      )}
+
+        <section className="layout">
+          <article className="card">
+            <h2>Evidence from knowledge service</h2>
+            <div className="evidence-list">
+              {result.evidence.map((e, i) => <div key={`${e.source}-${i}`}>
+                <b>{e.source}</b><p>{e.excerpt}</p><small>{e.retrieval_backend || result.rag_backend} · score {e.score.toFixed(3)}</small>
+              </div>)}
+            </div>
+          </article>
+          <article className="card review-card">
+            <h2>Human review</h2>
+            <p>{result.human_review_note}</p>
+            <div className="source-box"><b>Training sources</b>{result.data_sources.map((x) => <span key={x}>{x}</span>)}</div>
+            <p className="tiny">The energy telemetry model is trained directly on measured electrical data; it is not row-wise paired with the molding dataset.</p>
+          </article>
+        </section>
+      </>}
     </main>
   );
 }
