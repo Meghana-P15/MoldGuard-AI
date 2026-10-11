@@ -1,0 +1,20 @@
+{
+  "model_mode": "demo",
+  "features": [
+    "Tinj",
+    "tinj",
+    "Pinj",
+    "Ph",
+    "Bp",
+    "th"
+  ],
+  "labels": [
+    "G",
+    "Y",
+    "R"
+  ],
+  "source": "synthetic smoke-test data",
+  "energy_validation_mae": 0.023351573259253976,
+  "risk_macro_f1": 0.633516515110443,
+  "artifact_version": "2.0"
+}

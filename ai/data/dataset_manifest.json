@@ -1,0 +1,19 @@
+{
+  "dataset_mode": "real-datasets-included",
+  "files": [
+    {
+      "path": "ai/data/modelo.xlsx",
+      "size_bytes": 4843621,
+      "sha256": "b231af5d49c0a258b5625d6e2ab2c324c233017c5c010e326a3ca485387ecc9f"
+    },
+    {
+      "path": "ai/data/test_dataset.csv",
+      "size_bytes": 896439,
+      "sha256": "259d7cfa903320cb5a2d51c816771f07b0b39a701d2a1b4bde8bfb491fee5fee"
+    }
+  ],
+  "removed": [
+    "ai/data/demo_injection_molding.csv"
+  ],
+  "important_note": "These real dataset files are now packaged in the repository. Existing .joblib model artifacts may still be demo-trained until the training pipeline is rerun against a validated canonical mapping."
+}
