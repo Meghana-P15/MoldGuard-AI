@@ -1,0 +1,301 @@
+{
+  "model_mode": "real_data_only",
+  "architecture": "defect_xgboost_regression+thresholds+ood_isolation_forest+energy_xgboost+optimizer+semantic_rag",
+  "features": [
+    "Tinj",
+    "tinj",
+    "Pinj",
+    "Ph",
+    "Tmold",
+    "th"
+  ],
+  "feature_labels": {
+    "Tinj": "Melt temperature",
+    "tinj": "Cycle time",
+    "Pinj": "Injection pressure",
+    "Ph": "Holding pressure",
+    "Tmold": "Mold temperature",
+    "th": "Holding time"
+  },
+  "feature_units": {
+    "Tinj": "\u00b0C",
+    "tinj": "s",
+    "Pinj": "bar",
+    "Ph": "bar",
+    "Tmold": "\u00b0C",
+    "th": "s"
+  },
+  "feature_source_columns": {
+    "Tinj": "Temp_mat_fundido",
+    "tinj": "Tiempo_ciclo",
+    "Pinj": "Presion_inyeccion_bares",
+    "Ph": "Presion_retencion_bares",
+    "Tmold": "Temp_molde_centigrados ",
+    "th": "Tiempo_retencion_inyeccion_seg"
+  },
+  "parameter_bounds": {
+    "Tinj": [
+      220.0,
+      280.0
+    ],
+    "tinj": [
+      1.0,
+      50.0
+    ],
+    "Pinj": [
+      100.0,
+      180.0
+    ],
+    "Ph": [
+      40.0,
+      90.0
+    ],
+    "Tmold": [
+      60.0,
+      100.0
+    ],
+    "th": [
+      0.15,
+      25.5
+    ]
+  },
+  "raw_datasets": [
+    "modelo.xlsx",
+    "test_dataset.csv"
+  ],
+  "synthetic_data_used": false,
+  "pairing_note": "The molding and electrical datasets are independent real-world sources and are not row-wise joined. Defect-rate/OOD models use modelo.xlsx. The energy regressor uses test_dataset.csv directly.",
+  "risk_rows": 4494,
+  "risk_model_type": "defect_rate_regression_with_thresholds",
+  "risk_target": "%Defectuosos",
+  "defect_thresholds": {
+    "good_max": 0.05,
+    "warning_max": 0.06
+  },
+  "defect_validation_mae": 0.00827084116855147,
+  "defect_validation_rmse": 0.009852445150969403,
+  "defect_r2": 0.13030290770939856,
+  "defect_model_reliability_estimate": 0.8489554406566986,
+  "feature_stats": {
+    "Tinj": {
+      "min": 220.02,
+      "p01": 220.51,
+      "median": 250.17,
+      "p99": 279.4428,
+      "max": 280.0
+    },
+    "tinj": {
+      "min": 1.0,
+      "p01": 17.892999999999997,
+      "median": 25.8,
+      "p99": 47.6,
+      "max": 49.4
+    },
+    "Pinj": {
+      "min": 100.01,
+      "p01": 100.8086,
+      "median": 139.235,
+      "p99": 179.20419999999996,
+      "max": 179.97
+    },
+    "Ph": {
+      "min": 40.02,
+      "p01": 40.5686,
+      "median": 64.625,
+      "p99": 89.49069999999999,
+      "max": 89.99
+    },
+    "Tmold": {
+      "min": 60.0,
+      "p01": 60.3,
+      "median": 79.3,
+      "p99": 99.7,
+      "max": 100.0
+    },
+    "th": {
+      "min": 0.1722082810539523,
+      "p01": 3.773460766048668,
+      "median": 8.477802378255944,
+      "p99": 19.07067904894948,
+      "max": 25.48420300214439
+    }
+  },
+  "ood_score_p05": 0.011974273931867164,
+  "ood_score_p95": 0.1392930705119357,
+  "known_machines": [
+    "I-10",
+    "I-11",
+    "I-12",
+    "I-13",
+    "I-14",
+    "I-15",
+    "I-2",
+    "I-3",
+    "I-6",
+    "I-8",
+    "I-9"
+  ],
+  "known_products_sample": [
+    "ASA BALDE 20LT PP 30GR C/AMARILLO DERQUSA",
+    "ASA BALDE 20LT PP 30GR C/AMARILLO SIKA",
+    "ASA BALDE 20LT PP 30GR C/AZUL C & V",
+    "ASA BALDE 20LT PP 30GR C/AZUL CHEMIFABRIK",
+    "ASA BALDE 20LT PP 30GR C/AZUL CLARO",
+    "ASA BALDE 20LT PP 30GR C/AZUL MAESTRO",
+    "ASA BALDE 20LT PP 30GR C/AZUL MARTELL OSCURO",
+    "ASA BALDE 20LT PP 30GR C/AZUL MONTANA",
+    "ASA BALDE 20LT PP 30GR C/BLANCO",
+    "ASA BALDE 20LT PP 30GR C/CELESTE ECOLATEX",
+    "ASA BALDE 20LT PP 30GR C/GRIS PLATA",
+    "ASA BALDE 20LT PP 30GR C/MORADO FELINSA",
+    "ASA BALDE 20LT PP 30GR C/MORADO LOSARO",
+    "ASA BALDE 20LT PP 30GR C/MORADO ORIENTAL",
+    "ASA BALDE 20LT PP 30GR C/MORADO VELSALIT",
+    "ASA BALDE 20LT PP 30GR C/NARANJA CHEM",
+    "ASA BALDE 20LT PP 30GR C/NARANJA CHEMIFABRIK",
+    "ASA BALDE 20LT PP 30GR C/NEGRO",
+    "ASA BALDE 20LT PP 30GR C/ROJO ALIPEC",
+    "ASA BALDE 20LT PP 30GR C/ROJO DERQUSA",
+    "ASA BALDE 20LT PP 30GR C/VERDE",
+    "ASA BALDE 20LT PP 30GR C/VERDE CHEMICAL",
+    "ASA BALDE 20LT PP 30GR C/VERDE GLUCOM",
+    "ASA BALDE 20LT PP 30GR C/VERDE LOSARO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/AMARILLO DERQUSA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/AMARILLO SIKA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/AZUL CHEMIFABRIK",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/AZUL MAESTRO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/AZUL MONTANA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/BLANCO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/CELESTE GENERICO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/MORADO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/NARANJA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/NARANJA GOICOCHEA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/NEGRO",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/ROJO DERQUSA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/VERDE ANYPSA",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/VERDE CHEMICAL",
+    "ASA DE BALDE 4LT 8 CAV. 9.5GR C/VERDE LIMON",
+    "BALDE 10LT PP 411GR C/NEGRO",
+    "BALDE 10LT PP 411GR C/VERDE",
+    "BALDE 16LT PP M/01 520GR C/BLANCO",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/AMARILLO DERQUSA",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/AZUL MAESTRO",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/AZUL V.",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/BLANCO",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/GRIS PLATA",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/NATURAL",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/NEGRO",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/ROJO DERQUSA",
+    "BALDE 20LT M/NUEVO 02 PP 720GR C/VERDE",
+    "BALDE 20LT PP 800GR  NEGRO",
+    "BALDE 20LT PP M/NUEVO 800GR C/AMARILLO DERQUSA",
+    "BALDE 20LT PP M/NUEVO 800GR C/AMARILLO SIKA",
+    "BALDE 20LT PP M/NUEVO 800GR C/AZUL MAESTRO",
+    "BALDE 20LT PP M/NUEVO 800GR C/BLANCO",
+    "BALDE 20LT PP M/NUEVO 800GR C/GRIS ",
+    "BALDE 20LT PP M/NUEVO 800GR C/NEGRO",
+    "BALDE 20LT PP M/NUEVO 800GR C/ROJO CHEMIFABRIK",
+    "BALDE 4LT 180GR PEAD NARANJA",
+    "BALDE 4LT 2CAV 180GR PEAD C/ROJO ANYPSA",
+    "BALDE 4LT 2CAV 180GR PEAD C/VERDE ANYPSA",
+    "BALDE 4LT 2CAV. 180GR PEAD C/AMARILLO DERQUSA",
+    "BALDE 4LT 2CAV. 180GR PP BLANCO",
+    "BALDE 4LT 2CAV. 180GR PP C/AZUL MAESTRO",
+    "BALDE 4LT 2CAV. 180GR PP C/GRIS PLATA",
+    "BALDE 4LT 2CAV. 180GR PP C/ROJO TRESA",
+    "BALDE 4LT 2CAV. 180GR PP C/ROSADO CLARO",
+    "BALDE 4LT 2CAV. 180GR PP NEGRO",
+    "BALDE 4LT 4CAV. M/NVO 170GR PP BLANCO",
+    "Balde 4Lt 180GR PP AMARILLO SIKA",
+    "Balde 4Lt 2 CAV. 180GR PP AMR TRESA",
+    "POTE 1LT PP  58GR BLANCO",
+    "SOBRETAPA 7GR GENP PERU VERDE",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/ VERDE CHEMICAL",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/AZUL MAESTRO",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/BLANCO",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/CELESTE ECOLAT",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/NEGRO",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/ROJO JHOMERON",
+    "TAPA BALDE 16LT M/1 PP 2CAV 165GR C/VERDE GLUCOM",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AMARILLO DERQUSA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AMARILLO ISA SOL*",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AMARILLO MONTANA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AMARILLO SIKA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL C & V",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL CHEMA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL CHEMIFABRIK",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL FELINSA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL GOLDFISH",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL MAESTRO",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL MARTELL OSCURO",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL MONTANA",
+    "TAPA BALDE 20LT M/3 PP 215GR C/AZUL VELSALIT",
+    "TAPA BALDE 20LT M/3 PP 215GR C/BLANCO",
+    "TAPA BALDE 20LT M/3 PP 215GR C/CELESTE ECOLATEX",
+    "TAPA BALDE 20LT M/3 PP 215GR C/CELESTE GENERICO",
+    "TAPA BALDE 20LT M/3 PP 215GR C/CELESTE LASSER",
+    "TAPA BALDE 20LT M/3 PP 215GR C/CELESTE VELSALIT",
+    "TAPA BALDE 20LT M/3 PP 215GR C/GRIS"
+  ],
+  "part_weight": {
+    "median_g": 170.0,
+    "min_g": 1.6,
+    "max_g": 800.0
+  },
+  "energy_rows": 2901,
+  "energy_target": "TOTAL_ACT_POWER",
+  "energy_target_unit": "W",
+  "energy_features": [
+    "TOTAL_CURRENT",
+    "AVG_VOLTAGE",
+    "AVG_PF",
+    "AVG_FREQ",
+    "MOLD_SPEED",
+    "PRODUCTION_STATUS"
+  ],
+  "energy_validation_mae_watts": 240.63608956977458,
+  "energy_validation_rmse_watts": 463.68581473901,
+  "energy_r2": 0.9733228605062021,
+  "energy_machine_names": [
+    "FGP085"
+  ],
+  "energy_material_profiles": [
+    "A-PROD",
+    "B-PROD"
+  ],
+  "energy_molds": [
+    "SZR1137",
+    "SZR1239"
+  ],
+  "energy_profiles": {
+    "GLOBAL": {
+      "TOTAL_CURRENT": 15.225,
+      "AVG_VOLTAGE": 238.4333333333333,
+      "AVG_PF": 0.7000000000000001,
+      "AVG_FREQ": 50.0,
+      "MOLD_SPEED": 11.95,
+      "PRODUCTION_STATUS": 2.0
+    },
+    "A-PROD": {
+      "TOTAL_CURRENT": 16.194,
+      "AVG_VOLTAGE": 238.4333333333333,
+      "AVG_PF": 0.7000000000000001,
+      "AVG_FREQ": 50.0,
+      "MOLD_SPEED": 11.95,
+      "PRODUCTION_STATUS": 2.0
+    },
+    "B-PROD": {
+      "TOTAL_CURRENT": 2.434,
+      "AVG_VOLTAGE": 238.46666666666667,
+      "AVG_PF": 0.7033333333333333,
+      "AVG_FREQ": 50.0,
+      "MOLD_SPEED": 11.6,
+      "PRODUCTION_STATUS": 3.0
+    }
+  },
+  "power_quantiles_watts": {
+    "p05": 424.401,
+    "median": 1881.171,
+    "p95": 8409.954
+  }
+}

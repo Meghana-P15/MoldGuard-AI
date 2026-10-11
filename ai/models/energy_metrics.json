@@ -1,0 +1,15 @@
+{
+  "rows_used": 2901,
+  "target": "TOTAL_ACT_POWER (watts)",
+  "features": [
+    "TOTAL_CURRENT",
+    "AVG_VOLTAGE",
+    "AVG_PF",
+    "AVG_FREQ",
+    "MOLD_SPEED",
+    "PRODUCTION_STATUS"
+  ],
+  "mae_watts": 240.63608956977458,
+  "rmse_watts": 463.68581473901,
+  "r2": 0.9733228605062021
+}
